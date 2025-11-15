@@ -1,6 +1,7 @@
 <?php
 
 use App\Services\Platform\Http\Middleware\EnsureTenantContext;
+use App\Services\Platform\Http\Middleware\EnsurePublicTenantAccess;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -17,6 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
         $middleware->alias([
             'tenant.context' => EnsureTenantContext::class,
+        ]);
+        $middleware->alias([
+            'tenant.public_access' => EnsurePublicTenantAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

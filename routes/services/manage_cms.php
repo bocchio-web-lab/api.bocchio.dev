@@ -1,12 +1,10 @@
 <?php
 // routes/services/manage_cms.php
 
+use App\Services\Cms\Http\Controllers\Manage\PostController;
 use Illuminate\Support\Facades\Route;
 
-// Dummy route for testing middleware
-Route::get('/middleware-test', function () {
-    return response()->json([
-        'message' => 'CMS route success!',
-        'tenant_id' => app('current_tenant_id')
-    ]);
-});
+// All routes here are prefixed with /api/manage/cms
+// and protected by 'auth:sanctum' and 'tenant.context:cms'
+
+Route::apiResource('posts', PostController::class);
