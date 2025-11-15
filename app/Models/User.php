@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Platform\Models\Tenant;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -45,5 +46,18 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * The tenants this user is a member of.
+     * This relationship crosses databases.
+     */
+    public function tenants()
+    {
+        // Tell Laravel the pivot table is 'tenant_user'
+        // on the 'platform_db' connection.
+        return $this->belongsToMany(Tenant::class, 'platform_db.tenant_user')
+            ->withPivot('role')
+            ->withTimestamps();
     }
 }

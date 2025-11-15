@@ -1,3 +1,5 @@
+tests/Feature/*
+
 *.log
 .DS_Store
 .env
