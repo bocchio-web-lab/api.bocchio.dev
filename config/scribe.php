@@ -9,17 +9,44 @@ use function Knuckles\Scribe\Config\{removeStrategies, configureStrategy};
 
 return [
     // The HTML <title> for the generated documentation.
-    'title' => config('app.name') . ' API Documentation',
+    'title' => 'Multi-Tenant Platform API Documentation',
 
     // A short description of your API. Will be included in the docs webpage, Postman collection and OpenAPI spec.
-    'description' => '',
+    'description' => 'A multi-service, multi-tenant platform with identity management, tenant isolation, and CMS capabilities. This API enables you to manage services, tenants, and content across isolated tenant contexts.',
 
     // Text to place in the "Introduction" section, right after the `description`. Markdown and HTML are supported.
-    'intro_text' => <<<INTRO
-        This documentation aims to provide all the information you need to work with our API.
+    'intro_text' => <<<'INTRO'
+    ## Overview
 
-        <aside>As you scroll, you'll see code examples for working with the API in different programming languages in the dark area to the right (or as part of the content on mobile).
-        You can switch the language used with the tabs at the top right (or from the nav menu at the top left on mobile).</aside>
+    This platform provides a multi-tenant architecture where:
+
+    - **Services** are logical groupings of functionality (e.g., CMS, future services)
+    - **Tenants** are isolated instances of a service, owned and managed by users
+    - **Two API types** serve different purposes:
+      - **Management API** (`/api/manage/*`) - Authenticated CRUD operations for tenant owners/members
+      - **Content Delivery API** (`/api/content/*`) - Public/semi-public content access for consumers
+
+    ## Base URL
+
+    ```
+    https://api.bocchio.dev
+    ```
+
+    ## Authentication
+
+    **Management API** requires:
+    - Bearer token authentication (Laravel Sanctum)
+    - `X-Tenant-ID` header to specify tenant context
+
+    **Content Delivery API** uses:
+    - Public slug-based tenant resolution (no auth for public tenants)
+    - Optional bearer token for token-protected tenants
+
+    ## Tenant Isolation
+
+    All data is isolated by tenant. When making requests to the Management API, you must specify which tenant you're operating on via the `X-Tenant-ID` header. The platform ensures you can only access tenants you own or are a member of.
+
+    <aside>Code examples are shown on the right. You can switch between programming languages using the tabs.</aside>
     INTRO,
 
     // The base URL displayed in the docs.
@@ -52,6 +79,7 @@ return [
                 'login',
                 'logout',
                 'register',
+                '*/middleware-test',
             ],
         ],
     ],
@@ -121,11 +149,11 @@ return [
         'name' => 'Authorization',
 
         // This tells Scribe how to format the example
-        'use_value' => 'Bearer {TOKEN}',
+        'use_value' => 'Bearer {YOUR_AUTH_TOKEN}',
 
         // This will be shown in the "Authentication" section
-        'placeholder' => '{TOKEN}',
-        'description' => 'Enter your API token.',
+        'placeholder' => '{YOUR_AUTH_TOKEN}',
+        'description' => 'API token obtained from authentication. Use Laravel Sanctum token authentication for the Management API. The Content Delivery API is unauthenticated for public tenants, but may require a bearer token for token-protected tenants.',
 
         // // Where is the auth value meant to be sent in a request?
         // 'in' => AuthIn::BEARER->value,
@@ -184,13 +212,17 @@ return [
 
     'groups' => [
         // Endpoints which don't have a @group will be placed in this default group.
-        'default' => 'Endpoints',
+        'default' => 'Other Endpoints',
 
         // By default, Scribe will sort groups alphabetically, and endpoints in the order their routes are defined.
         // You can override this by listing the groups, subgroups and endpoints here in the order you want them.
         // See https://scribe.knuckles.wtf/blog/laravel-v4#easier-sorting and https://scribe.knuckles.wtf/laravel/reference/config#order for details
         // Note: does not work for `external` docs types
-        'order' => [],
+        'order' => [
+            'Platform Management',
+            'CMS - Management',
+            'CMS - Content Delivery',
+        ],
     ],
 
     // Custom logo path. This will be used as the value of the src attribute for the <img> tag,

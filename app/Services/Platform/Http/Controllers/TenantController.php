@@ -11,10 +11,45 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Services\Platform\Enums\TenantAccessLevel;
 
+/**
+ * @group Platform Management
+ *
+ * Manage tenants within the platform. A tenant is an isolated instance of a service
+ * that you own and control. All content and data are scoped to tenants.
+ */
 class TenantController extends Controller
 {
     /**
-     * Display a listing of the authenticated user's tenants.
+     * List your tenants
+     *
+     * Returns all tenants that the authenticated user owns or is a member of.
+     * This includes both tenants you created and tenants you've been invited to.
+     *
+     * @authenticated
+     *
+     * @response 200 {
+     *   "data": [
+     *     {
+     *       "id": 1,
+     *       "name": "My CMS",
+     *       "service_id": 1,
+     *       "owner_id": 1,
+     *       "public_slug": "my-cms-abc123",
+     *       "access_level": "public",
+     *       "public_api_key": "pk_1234567890abcdef",
+     *       "settings": {},
+     *       "created_at": "2025-01-20T10:00:00.000000Z",
+     *       "updated_at": "2025-01-20T10:00:00.000000Z",
+     *       "service": {
+     *         "id": 1,
+     *         "name": "CMS",
+     *         "slug": "cms",
+     *         "description": "Content Management System",
+     *         "is_active": true
+     *       }
+     *     }
+     *   ]
+     * }
      */
     public function index()
     {
@@ -33,7 +68,38 @@ class TenantController extends Controller
     }
 
     /**
-     * Create a new tenant for a specific service.
+     * Create a tenant
+     *
+     * Creates a new tenant for a specific service. You become the owner and are
+     * automatically added as an admin member. The tenant will have a unique public
+     * slug used for public content access.
+     *
+     * @authenticated
+     *
+     * @bodyParam name string required The display name of the tenant. Example: My Blog
+     * @bodyParam service_id integer required The ID of the service (get from /api/manage/services). Example: 1
+     * @bodyParam public_slug string Optional custom public slug (must be unique). If not provided, one will be auto-generated. Example: my-blog
+     * @bodyParam access_level string Access level for public content API. One of: public, private, token_protected. Default is private. Example: public
+     *
+     * @response 201 {
+     *   "data": {
+     *     "id": 2,
+     *     "name": "My Blog",
+     *     "service_id": 1,
+     *     "owner_id": 1,
+     *     "public_slug": "my-blog",
+     *     "access_level": "public",
+     *     "public_api_key": "pk_abcdefghijklmnopqrstuvwxyz123456789",
+     *     "settings": {},
+     *     "created_at": "2025-01-22T10:00:00.000000Z",
+     *     "updated_at": "2025-01-22T10:00:00.000000Z",
+     *     "service": {
+     *       "id": 1,
+     *       "name": "CMS",
+     *       "slug": "cms"
+     *     }
+     *   }
+     * }
      */
     public function store(Request $request)
     {
@@ -70,8 +136,48 @@ class TenantController extends Controller
     }
 
     /**
-     * Display the specified tenant.
-     * We must check if the user is a member.
+     * Get tenant details
+     *
+     * Returns detailed information about a specific tenant, including its members.
+     * You must be the owner or a member to access this endpoint.
+     *
+     * @authenticated
+     *
+     * @urlParam tenant integer required The ID of the tenant. Example: 1
+     *
+     * @response 200 {
+     *   "data": {
+     *     "id": 1,
+     *     "name": "My CMS",
+     *     "service_id": 1,
+     *     "owner_id": 1,
+     *     "public_slug": "my-cms-abc123",
+     *     "access_level": "public",
+     *     "public_api_key": "pk_1234567890abcdef",
+     *     "settings": {},
+     *     "created_at": "2025-01-20T10:00:00.000000Z",
+     *     "updated_at": "2025-01-20T10:00:00.000000Z",
+     *     "service": {
+     *       "id": 1,
+     *       "name": "CMS",
+     *       "slug": "cms"
+     *     },
+     *     "users": [
+     *       {
+     *         "id": 1,
+     *         "name": "John Doe",
+     *         "email": "john@example.com",
+     *         "pivot": {
+     *           "role": "admin"
+     *         }
+     *       }
+     *     ]
+     *   }
+     * }
+     *
+     * @response 403 {
+     *   "message": "You do not have access to this tenant."
+     * }
      */
     public function show(Tenant $tenant)
     {
@@ -91,7 +197,39 @@ class TenantController extends Controller
     }
 
     /**
-     * Update the specified tenant (e.g., change name or access level).
+     * Update a tenant
+     *
+     * Updates tenant information such as name, public slug, or access level.
+     * Only the tenant owner can perform updates. You can also regenerate the
+     * public API key used for token-protected content access.
+     *
+     * @authenticated
+     *
+     * @urlParam tenant integer required The ID of the tenant. Example: 1
+     *
+     * @bodyParam name string The display name. Example: Updated Blog Name
+     * @bodyParam public_slug string Custom public slug (must be unique). Example: updated-blog
+     * @bodyParam access_level string Access level: public, private, or token_protected. Example: token_protected
+     * @bodyParam regenerate_api_key boolean Set to true to generate a new public API key. Example: false
+     *
+     * @response 200 {
+     *   "data": {
+     *     "id": 1,
+     *     "name": "Updated Blog Name",
+     *     "service_id": 1,
+     *     "owner_id": 1,
+     *     "public_slug": "updated-blog",
+     *     "access_level": "token_protected",
+     *     "public_api_key": "pk_newgeneratedkey1234567890",
+     *     "settings": {},
+     *     "created_at": "2025-01-20T10:00:00.000000Z",
+     *     "updated_at": "2025-01-22T11:00:00.000000Z"
+     *   }
+     * }
+     *
+     * @response 403 {
+     *   "message": "Only the tenant owner can perform this action."
+     * }
      */
     public function update(Request $request, Tenant $tenant)
     {
@@ -128,7 +266,22 @@ class TenantController extends Controller
     }
 
     /**
-     * Remove the specified tenant.
+     * Delete a tenant
+     *
+     * Permanently deletes a tenant and all associated data. This action cannot be undone.
+     * Only the tenant owner can delete a tenant.
+     *
+     * @authenticated
+     *
+     * @urlParam tenant integer required The ID of the tenant. Example: 1
+     *
+     * @response 200 {
+     *   "message": "Tenant deleted successfully"
+     * }
+     *
+     * @response 403 {
+     *   "message": "Only the tenant owner can delete this tenant."
+     * }
      */
     public function destroy(Tenant $tenant)
     {
