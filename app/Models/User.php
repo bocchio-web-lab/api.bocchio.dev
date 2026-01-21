@@ -54,9 +54,7 @@ class User extends Authenticatable
      */
     public function tenants()
     {
-        // Tell Laravel the pivot table is 'tenant_user'
-        // on the 'platform_db' connection.
-        return $this->belongsToMany(Tenant::class, 'platform_db.tenant_user')
+        return $this->belongsToMany(Tenant::class, 'tenant_user')
             ->withPivot('role')
             ->withTimestamps();
     }

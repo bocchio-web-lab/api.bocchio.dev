@@ -10,12 +10,10 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 
-Route::prefix('manage')
-    ->middleware('auth:sanctum')
-    ->group(function () {
-        Route::get('/services', [ServiceController::class, 'index']);
-        Route::apiResource('/tenants', TenantController::class);
-    });
+Route::middleware('auth:sanctum')->prefix('manage')->group(function () {
+    Route::get('/services', [ServiceController::class, 'index']);
+    Route::apiResource('/tenants', TenantController::class);
+});
 
 Route::prefix('manage/cms')
     ->middleware(['auth:sanctum', 'tenant.context:cms'])

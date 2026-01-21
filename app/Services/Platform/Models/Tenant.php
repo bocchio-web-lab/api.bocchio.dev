@@ -65,8 +65,7 @@ class Tenant extends Model
      */
     public function users()
     {
-        // Note we must specify the pivot table name and connection
-        return $this->belongsToMany(User::class, 'platform_db.tenant_user')
+        return $this->belongsToMany(User::class, 'tenant_user')
             ->withPivot('role')
             ->withTimestamps();
     }

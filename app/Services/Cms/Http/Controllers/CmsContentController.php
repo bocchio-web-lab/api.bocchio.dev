@@ -3,6 +3,8 @@
 namespace App\Services\Cms\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Services\Cms\Models\ContentItem;
+use App\Services\Cms\Models\Tag;
 use Illuminate\Http\Request;
 
 /**
@@ -29,52 +31,128 @@ class CmsContentController extends Controller
                     'name' => $tenant->name,
                     'slug' => $tenant->public_slug,
                 ],
-                'message' => 'CMS Content API - Ready for implementation'
             ]
         ]);
     }
 
     /**
-     * Placeholder for listing published posts
+     * List published posts
      */
-    public function listPosts()
+    public function listPosts(Request $request)
     {
-        return response()->json([
-            'data' => [],
-            'message' => 'Published posts endpoint - Ready for implementation'
-        ]);
+        $posts = ContentItem::published()
+            ->ofType('post')
+            ->with(['tags'])
+            ->orderBy('published_at', 'desc')
+            ->paginate(15);
+
+        return response()->json($posts);
     }
 
     /**
-     * Placeholder for getting a single post by slug
+     * Get a single published post by slug
      */
     public function showPost($tenant_slug, $post_slug)
     {
+        $post = ContentItem::published()
+            ->ofType('post')
+            ->where('slug', $post_slug)
+            ->with([
+                'tags',
+                'comments' => function ($query) {
+                    $query->approved()->orderBy('created_at', 'desc');
+                }
+            ])
+            ->firstOrFail();
+
         return response()->json([
-            'data' => null,
-            'message' => 'Post detail endpoint - Ready for implementation'
+            'data' => $post
         ]);
     }
 
     /**
-     * Placeholder for listing published pages
+     * List published pages
      */
     public function listPages()
     {
+        $pages = ContentItem::published()
+            ->ofType('page')
+            ->orderBy('title')
+            ->get();
+
         return response()->json([
-            'data' => [],
-            'message' => 'Published pages endpoint - Ready for implementation'
+            'data' => $pages
         ]);
     }
 
     /**
-     * Placeholder for getting a single page by slug
+     * Get a single published page by slug
      */
     public function showPage($tenant_slug, $page_slug)
     {
+        $page = ContentItem::published()
+            ->ofType('page')
+            ->where('slug', $page_slug)
+            ->firstOrFail();
+
         return response()->json([
-            'data' => null,
-            'message' => 'Page detail endpoint - Ready for implementation'
+            'data' => $page
+        ]);
+    }
+
+    /**
+     * List published projects
+     */
+    public function listProjects()
+    {
+        $projects = ContentItem::published()
+            ->ofType('project')
+            ->with(['tags'])
+            ->orderBy('published_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'data' => $projects
+        ]);
+    }
+
+    /**
+     * Get all tags with published content count
+     */
+    public function listTags()
+    {
+        $tags = Tag::whereHas('contentItems', function ($query) {
+            $query->published();
+        })
+            ->withCount([
+                'contentItems' => function ($query) {
+                    $query->published();
+                }
+            ])
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'data' => $tags
+        ]);
+    }
+
+    /**
+     * Get published content for a specific tag
+     */
+    public function showTag($tenant_slug, $tag_slug)
+    {
+        $tag = Tag::where('slug', $tag_slug)->firstOrFail();
+
+        $contentItems = $tag->contentItems()
+            ->published()
+            ->with(['tags'])
+            ->orderBy('published_at', 'desc')
+            ->paginate(15);
+
+        return response()->json([
+            'tag' => $tag,
+            'content_items' => $contentItems
         ]);
     }
 }

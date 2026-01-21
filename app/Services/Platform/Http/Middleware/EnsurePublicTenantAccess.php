@@ -32,8 +32,13 @@ class EnsurePublicTenantAccess
             return response()->json(['message' => 'Not Found.'], 404);
         }
 
+        // Debug: check tenant access_level
+        // \Log::info('Tenant access check', ['tenant_id' => $tenant->id, 'access_level' => $tenant->access_level, 'access_level_value' => $tenant->access_level->value ?? $tenant->access_level]);
+
         // Check the tenant's access level
-        switch ($tenant->access_level) {
+        $accessLevel = $tenant->access_level instanceof \BackedEnum ? $tenant->access_level->value : $tenant->access_level;
+
+        switch ($accessLevel) {
             case 'private':
                 return response()->json(['message' => 'Access to this resource is private.'], 403);
 
@@ -42,15 +47,17 @@ class EnsurePublicTenantAccess
                 if (!$token || $token !== $tenant->public_api_key) {
                     return response()->json(['message' => 'Unauthorized.'], 401);
                 }
-            // Token is valid, fall through to grant access.
+                // Token is valid, fall through to grant access.
+                break;
 
             case 'public':
                 // Access is granted
-                App::instance('current_tenant_id', $tenant->id);
-                App::instance('current_tenant', $tenant);
-                return $next($request);
+                break;
         }
 
-        return response()->json(['message' => 'Invalid tenant configuration.'], 500);
+        // Grant access for public and validated token_protected
+        App::instance('current_tenant_id', $tenant->id);
+        App::instance('current_tenant', $tenant);
+        return $next($request);
     }
 }

@@ -18,8 +18,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
         $middleware->alias([
             'tenant.context' => EnsureTenantContext::class,
-        ]);
-        $middleware->alias([
             'tenant.public_access' => EnsurePublicTenantAccess::class,
         ]);
     })

@@ -1,29 +1,24 @@
 <?php
 
+use App\Models\User;
+use App\Services\Platform\Models\Service;
+use App\Services\Platform\Models\Tenant;
+use App\Services\Platform\Enums\TenantAccessLevel;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
 |--------------------------------------------------------------------------
-|
-| The closure you provide to your test functions is always bound to a specific PHPUnit test
-| case class. By default, that class is "PHPUnit\Framework\TestCase". Of course, you may
-| need to change it using the "pest()" function to bind a different classes or traits.
-|
 */
 
 pest()->extend(Tests\TestCase::class)
- // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+    ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Feature');
 
 /*
 |--------------------------------------------------------------------------
 | Expectations
 |--------------------------------------------------------------------------
-|
-| When you're writing tests, you often need to check that values meet certain conditions. The
-| "expect()" function gives you access to a set of "expectations" methods that you can use
-| to assert different things. Of course, you may extend the Expectation API at any time.
-|
 */
 
 expect()->extend('toBeOne', function () {
@@ -34,14 +29,47 @@ expect()->extend('toBeOne', function () {
 |--------------------------------------------------------------------------
 | Functions
 |--------------------------------------------------------------------------
-|
-| While Pest is very powerful out-of-the-box, you may have some testing code specific to your
-| project that you don't want to repeat in every file. Here you can also expose helpers as
-| global functions to help you to reduce the number of lines of code in your test files.
-|
 */
 
-function something()
+/**
+ * Create a user and return it authenticated.
+ */
+function actingAsUser(array $attributes = []): User
 {
-    // ..
+    $user = User::factory()->create($attributes);
+    test()->actingAs($user, 'sanctum');
+    return $user;
+}
+
+/**
+ * Create a tenant for a given service.
+ */
+function createTenantForService(string $serviceSlug, User $owner, array $attributes = []): Tenant
+{
+    $service = Service::where('slug', $serviceSlug)->first();
+
+    if (!$service) {
+        throw new \Exception("Service '{$serviceSlug}' not found. Run seeders first.");
+    }
+
+    $tenant = Tenant::create(array_merge([
+        'service_id' => $service->id,
+        'owner_id' => $owner->id,
+        'name' => 'Test Tenant',
+        'public_slug' => 'test-' . uniqid(),
+        'access_level' => TenantAccessLevel::PRIVATE ,
+    ], $attributes));
+
+    // Attach owner as admin
+    $tenant->users()->attach($owner->id, ['role' => 'admin']);
+
+    return $tenant;
+}
+
+/**
+ * Add X-Tenant-ID header to the test request.
+ */
+function withTenantHeader(int $tenantId): \Illuminate\Testing\TestResponse
+{
+    return test()->withHeader('X-Tenant-ID', $tenantId);
 }
