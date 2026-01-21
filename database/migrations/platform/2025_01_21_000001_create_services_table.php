@@ -5,26 +5,28 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    /**
-     * The database connection that should be used by the migration.
-     *
-     * @var string
-     */
     protected $connection = 'platform_db';
 
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
-        Schema::create('services', function (Blueprint $table) {
+        Schema::connection($this->connection)->create('services', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // e.g., "Headless CMS"
-            $table->string('slug')->unique(); // e.g., "cms"
+            $table->string('name');
+            $table->string('slug')->unique();
             $table->text('description')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('services');
+        Schema::connection($this->connection)->dropIfExists('services');
     }
 };

@@ -60,4 +60,12 @@ class User extends Authenticatable
             ->withPivot('role')
             ->withTimestamps();
     }
+
+    /**
+     * The tenants owned by this user.
+     */
+    public function ownedTenants()
+    {
+        return $this->hasMany(Tenant::class, 'owner_id');
+    }
 }

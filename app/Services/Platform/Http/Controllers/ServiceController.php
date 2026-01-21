@@ -12,6 +12,20 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        return Service::all();
+        $services = Service::active()->get();
+
+        return response()->json([
+            'data' => $services
+        ]);
+    }
+
+    /**
+     * Display the specified service.
+     */
+    public function show(Service $service)
+    {
+        return response()->json([
+            'data' => $service
+        ]);
     }
 }

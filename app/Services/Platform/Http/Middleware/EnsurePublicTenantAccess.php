@@ -47,6 +47,7 @@ class EnsurePublicTenantAccess
             case 'public':
                 // Access is granted
                 App::instance('current_tenant_id', $tenant->id);
+                App::instance('current_tenant', $tenant);
                 return $next($request);
         }
 

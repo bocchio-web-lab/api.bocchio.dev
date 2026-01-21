@@ -21,10 +21,12 @@ class Tenant extends Model
         'public_slug',
         'access_level',
         'public_api_key',
+        'settings',
     ];
 
     protected $casts = [
         'access_level' => TenantAccessLevel::class,
+        'settings' => 'array',
     ];
 
     /**

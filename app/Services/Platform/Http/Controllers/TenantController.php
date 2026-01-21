@@ -7,6 +7,7 @@ use App\Services\Platform\Models\Service;
 use App\Services\Platform\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Services\Platform\Enums\TenantAccessLevel;
 
@@ -17,7 +18,18 @@ class TenantController extends Controller
      */
     public function index()
     {
-        return Auth::user()->tenants()->with('service')->get();
+        $user = Auth::user();
+
+        // Get both owned and member tenants
+        $ownedTenants = $user->ownedTenants()->with('service')->get();
+        $memberTenants = $user->tenants()->with('service')->get();
+
+        // Merge and remove duplicates
+        $allTenants = $ownedTenants->merge($memberTenants)->unique('id');
+
+        return response()->json([
+            'data' => $allTenants->values()
+        ]);
     }
 
     /**
@@ -28,23 +40,33 @@ class TenantController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'service_id' => 'required|exists:platform_db.services,id',
+            'public_slug' => 'sometimes|string|alpha_dash|unique:platform_db.tenants,public_slug',
+            'access_level' => ['sometimes', Rule::enum(TenantAccessLevel::class)],
         ]);
 
         $service = Service::find($validated['service_id']);
         $user = Auth::user();
+
+        // Generate public_slug if not provided
+        if (!isset($validated['public_slug'])) {
+            $validated['public_slug'] = Str::slug($validated['name']) . '-' . Str::lower(Str::random(6));
+        }
 
         // Create the tenant
         $tenant = Tenant::create([
             'name' => $validated['name'],
             'service_id' => $service->id,
             'owner_id' => $user->id,
-            'public_slug' => str_slug($validated['name'] . '-' . strtolower(Str::random(6))) // Simple slug
+            'public_slug' => $validated['public_slug'],
+            'access_level' => $validated['access_level'] ?? TenantAccessLevel::PRIVATE ,
         ]);
 
         // Attach the owner as an 'admin'
         $tenant->users()->attach($user->id, ['role' => 'admin']);
 
-        return response()->json($tenant, 201);
+        return response()->json([
+            'data' => $tenant->load('service')
+        ], 201);
     }
 
     /**
@@ -53,12 +75,19 @@ class TenantController extends Controller
      */
     public function show(Tenant $tenant)
     {
-        // Uses implicit route model binding, but we need to check access
-        if (Auth::user()->tenants()->where('tenants.id', $tenant->id)->doesntExist()) {
+        $user = Auth::user();
+
+        // Check if user is owner or member
+        $isOwner = $tenant->owner_id === $user->id;
+        $isMember = $user->tenants()->where('tenants.id', $tenant->id)->exists();
+
+        if (!$isOwner && !$isMember) {
             abort(403, 'You do not have access to this tenant.');
         }
 
-        return $tenant->load('service', 'users');
+        return response()->json([
+            'data' => $tenant->load('service', 'users')
+        ]);
     }
 
     /**
@@ -67,7 +96,6 @@ class TenantController extends Controller
     public function update(Request $request, Tenant $tenant)
     {
         // Only the owner or an admin can update.
-        // A more robust check might use the 'role' on the pivot table.
         if ($tenant->owner_id !== Auth::id()) {
             abort(403, 'Only the tenant owner can perform this action.');
         }
@@ -82,9 +110,11 @@ class TenantController extends Controller
                 Rule::unique('platform_db.tenants')->ignore($tenant->id),
             ],
             'access_level' => ['sometimes', 'required', Rule::enum(TenantAccessLevel::class)],
+            'regenerate_api_key' => 'sometimes|boolean',
         ]);
 
-        $tenant->update($validated);
+        // Update basic fields
+        $tenant->update(array_filter($validated, fn($key) => $key !== 'regenerate_api_key', ARRAY_FILTER_USE_KEY));
 
         // Logic to re-generate API key if requested
         if ($request->input('regenerate_api_key') === true) {
@@ -92,7 +122,9 @@ class TenantController extends Controller
             $tenant->save();
         }
 
-        return $tenant;
+        return response()->json([
+            'data' => $tenant->fresh()
+        ]);
     }
 
     /**
@@ -105,11 +137,12 @@ class TenantController extends Controller
             abort(403, 'Only the tenant owner can delete this tenant.');
         }
 
-        // Pivot records are deleted automatically by cascade (if set up)
-        // or should be detached manually.
+        // Pivot records are deleted automatically by cascade
         $tenant->users()->detach();
         $tenant->delete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Tenant deleted successfully'
+        ], 200);
     }
 }

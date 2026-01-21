@@ -32,13 +32,24 @@ class EnsureTenantContext
             })
             ->first();
 
+        // If not found as member, check if user is the owner
+        if (!$tenant) {
+            $tenant = $user->ownedTenants()
+                ->where('id', $tenantId)
+                ->whereHas('service', function ($query) use ($serviceSlug) {
+                    $query->where('slug', $serviceSlug);
+                })
+                ->first();
+        }
+
         if (!$tenant) {
             return response()->json(['message' => 'Forbidden. You do not have access to this tenant or service.'], 403);
         }
 
-        // Make the current tenant ID globally available for this request.
+        // Make the current tenant ID and tenant globally available for this request.
         // This is what our Global Scopes will use.
         App::instance('current_tenant_id', $tenant->id);
+        App::instance('current_tenant', $tenant);
 
         return $next($request);
     }
