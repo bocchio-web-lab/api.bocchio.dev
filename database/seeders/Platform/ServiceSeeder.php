@@ -12,23 +12,25 @@ class ServiceSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->command->info('Seeding services...');
+
         $services = [
             [
                 'name' => 'Content Management System',
                 'slug' => 'cms',
-                'description' => 'A flexible CMS for managing posts, pages, and media content.',
+                'description' => 'A flexible content management system for structuring, publishing, and maintaining websites and blogs.',
                 'is_active' => true,
             ],
             [
-                'name' => 'Game Backend',
-                'slug' => 'game',
-                'description' => 'Multiplayer game backend service with real-time capabilities.',
+                'name' => 'Global Direction Explorer',
+                'slug' => 'global-direction-explorer',
+                'description' => 'A world exploration tool that reveals directions, surface distances, and through-Earth paths between geographic locations.',
                 'is_active' => true,
             ],
             [
-                'name' => 'Rocket Launch Tracker',
-                'slug' => 'rockets',
-                'description' => 'Track and monitor rocket launches worldwide.',
+                'name' => 'Tutoring Management System',
+                'slug' => 'tutoring-management-system',
+                'description' => 'A centralized system for managing tutoring lessons, students, instructors, and payment records.',
                 'is_active' => true,
             ],
         ];
@@ -40,6 +42,6 @@ class ServiceSeeder extends Seeder
             );
         }
 
-        $this->command->info('Services seeded successfully!');
+        $this->command->info("✓ Created " . count($services) . " services");
     }
 }

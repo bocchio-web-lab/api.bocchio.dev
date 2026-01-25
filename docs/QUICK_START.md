@@ -110,7 +110,6 @@ X-Tenant-ID: 1
 Content-Type: application/json
 
 {
-  "type": "post",
   "title": "My First Blog Post",
   "body": "This is the content of my first post!",
   "excerpt": "A short summary",
@@ -124,7 +123,6 @@ Response:
 {
   "data": {
     "id": 1,
-    "type": "post",
     "title": "My First Blog Post",
     "slug": "my-first-blog-post",
     "status": "published",

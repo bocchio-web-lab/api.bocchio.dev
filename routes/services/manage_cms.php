@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 // All routes here are prefixed with /api/manage/cms
 // and protected by 'auth:sanctum' and 'tenant.context:cms'
 
-// Content Items (Posts, Pages, Projects)
+// Content Items
 Route::apiResource('content', ContentItemController::class);
 
 // Comment Moderation

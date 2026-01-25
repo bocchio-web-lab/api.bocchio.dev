@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 /**
  * @group CMS - Management
  *
- * Manage content items (posts, pages, projects) within a CMS tenant.
+ * Manage content items within a CMS tenant.
  * All endpoints require authentication and the `X-Tenant-ID` header.
  * Content is isolated by tenant - you can only manage content in tenants you own or are a member of.
  */
@@ -20,7 +20,7 @@ class ContentItemController extends Controller
      * List content items
      *
      * Returns a paginated list of content items in the current tenant.
-     * You can filter by type (post, page, project) and status (draft, published, archived).
+     * You can filter by type (custom string) and status (draft, published, archived).
      *
      * @authenticated
      * @header X-Tenant-ID required The ID of the tenant context. Example: 1
@@ -65,7 +65,7 @@ class ContentItemController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ContentItem::with(['author', 'tags'])
+        $query = ContentItem::with(['tags'])
             ->orderBy('created_at', 'desc');
 
         // Filter by type
@@ -80,20 +80,34 @@ class ContentItemController extends Controller
 
         $contentItems = $query->paginate(15);
 
+        // Manually add authors from identity_db for each item
+        $authorIds = $contentItems->pluck('author_id')->unique()->filter();
+        $authors = \App\Models\User::on('identity_db')
+            ->whereIn('id', $authorIds)
+            ->get()
+            ->keyBy('id');
+
+        // Transform the collection to add author data
+        $contentItems->getCollection()->transform(function ($item) use ($authors) {
+            $itemArray = $item->toArray();
+            $itemArray['author'] = $authors->get($item->author_id);
+            return $itemArray;
+        });
+
         return response()->json($contentItems);
     }
 
     /**
      * Create content item
      *
-     * Creates a new content item (post, page, or project). The authenticated user
+     * Creates a new content item. The authenticated user
      * becomes the author. You can optionally attach tags and set the status.
      * If no slug is provided, one will be auto-generated from the title.
      *
      * @authenticated
      * @header X-Tenant-ID required The ID of the tenant context. Example: 1
      *
-     * @bodyParam type string required Type of content: post, page, or project. Example: post
+     * @bodyParam type string Custom content type. Example: post
      * @bodyParam title string required The title of the content. Example: Getting Started with Laravel
      * @bodyParam slug string Optional URL-friendly slug. Auto-generated if not provided. Example: getting-started-with-laravel
      * @bodyParam excerpt string Short summary or excerpt. Example: Learn the basics of Laravel
@@ -133,7 +147,7 @@ class ContentItemController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'type' => 'required|in:post,page,project',
+            'type' => 'nullable|string|max:255',
             'title' => 'required|string|max:255',
             'slug' => 'sometimes|string|max:255',
             'excerpt' => 'nullable|string',
@@ -204,12 +218,14 @@ class ContentItemController extends Controller
      *   }
      * }
      */
-    public function show(ContentItem $contentItem)
+    public function show($id)
     {
-        $contentItem->loadMissing(['tags', 'comments']);
+        // Fetch manually to ensure the BelongsToTenant scope and cms_db connection are applied
+        $contentItem = ContentItem::with(['tags', 'comments'])->findOrFail($id);
 
         // Manually add author from identity_db
         $author = \App\Models\User::on('identity_db')->find($contentItem->author_id);
+
         $data = $contentItem->toArray();
         $data['author'] = $author;
 
@@ -252,8 +268,11 @@ class ContentItemController extends Controller
      *   "message": "You do not have permission to update this content."
      * }
      */
-    public function update(Request $request, ContentItem $contentItem)
+    public function update(Request $request, $id)
     {
+        // Fetch manually to ensure the BelongsToTenant scope and cms_db connection are applied
+        $contentItem = ContentItem::findOrFail($id);
+
         // Authorization: only author or admins can update
         $user = Auth::user();
         $tenant = app('current_tenant');
@@ -286,8 +305,16 @@ class ContentItemController extends Controller
             $contentItem->tags()->sync($validated['tags']);
         }
 
+        // Manually add author from identity_db
+        $contentItem->refresh();
+        $contentItem->loadMissing(['tags']);
+        $author = \App\Models\User::on('identity_db')->find($contentItem->author_id);
+
+        $data = $contentItem->toArray();
+        $data['author'] = $author;
+
         return response()->json([
-            'data' => $contentItem->fresh(['author', 'tags'])
+            'data' => $data
         ]);
     }
 
@@ -310,8 +337,11 @@ class ContentItemController extends Controller
      *   "message": "You do not have permission to delete this content."
      * }
      */
-    public function destroy(ContentItem $contentItem)
+    public function destroy($id)
     {
+        // Fetch manually to ensure the BelongsToTenant scope and cms_db connection are applied
+        $contentItem = ContentItem::findOrFail($id);
+
         // Authorization: only author or admins can delete
         $user = Auth::user();
         $tenant = app('current_tenant');
@@ -325,8 +355,7 @@ class ContentItemController extends Controller
             ], 403);
         }
 
-        // Force delete by ID to bypass any issues with model instance
-        ContentItem::withoutGlobalScopes()->where('id', $contentItem->id)->delete();
+        $contentItem->delete();
 
         return response()->json([
             'message' => 'Content item deleted successfully'

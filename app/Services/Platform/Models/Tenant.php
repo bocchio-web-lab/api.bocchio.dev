@@ -14,6 +14,14 @@ class Tenant extends Model
 
     protected $connection = 'platform_db';
 
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory()
+    {
+        return \Database\Factories\Platform\TenantFactory::new();
+    }
+
     protected $fillable = [
         'service_id',
         'owner_id',

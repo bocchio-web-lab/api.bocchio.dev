@@ -1,7 +1,7 @@
 name: 'CMS - Management'
 description: |-
 
-  Manage content items (posts, pages, projects) within a CMS tenant.
+  Manage content items within a CMS tenant.
   All endpoints require authentication and the `X-Tenant-ID` header.
   Content is isolated by tenant - you can only manage content in tenants you own or are a member of.
 endpoints:
@@ -15,7 +15,7 @@ endpoints:
       groupName: 'CMS - Management'
       groupDescription: |-
 
-        Manage content items (posts, pages, projects) within a CMS tenant.
+        Manage content items within a CMS tenant.
         All endpoints require authentication and the `X-Tenant-ID` header.
         Content is isolated by tenant - you can only manage content in tenants you own or are a member of.
       subgroup: ''
@@ -23,7 +23,7 @@ endpoints:
       title: 'List content items'
       description: |-
         Returns a paginated list of content items in the current tenant.
-        You can filter by type (post, page, project) and status (draft, published, archived).
+        You can filter by type (custom string) and status (draft, published, archived).
       authenticated: true
       deprecated: false
     headers:
@@ -121,14 +121,14 @@ endpoints:
       groupName: 'CMS - Management'
       groupDescription: |-
 
-        Manage content items (posts, pages, projects) within a CMS tenant.
+        Manage content items within a CMS tenant.
         All endpoints require authentication and the `X-Tenant-ID` header.
         Content is isolated by tenant - you can only manage content in tenants you own or are a member of.
       subgroup: ''
       subgroupDescription: ''
       title: 'Create content item'
       description: |-
-        Creates a new content item (post, page, or project). The authenticated user
+        Creates a new content item. The authenticated user
         becomes the author. You can optionally attach tags and set the status.
         If no slug is provided, one will be auto-generated from the title.
       authenticated: true
@@ -146,13 +146,13 @@ endpoints:
       type:
         custom: []
         name: type
-        description: 'Type of content: post, page, or project.'
-        required: true
+        description: 'Custom content type.'
+        required: false
         example: post
         type: string
         enumValues: []
         exampleWasSpecified: true
-        nullable: false
+        nullable: true
         deprecated: false
       title:
         custom: []
@@ -312,7 +312,7 @@ endpoints:
       groupName: 'CMS - Management'
       groupDescription: |-
 
-        Manage content items (posts, pages, projects) within a CMS tenant.
+        Manage content items within a CMS tenant.
         All endpoints require authentication and the `X-Tenant-ID` header.
         Content is isolated by tenant - you can only manage content in tenants you own or are a member of.
       subgroup: ''
@@ -334,8 +334,8 @@ endpoints:
         name: id
         description: 'The ID of the content.'
         required: true
-        example: 1
-        type: integer
+        example: architecto
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -352,7 +352,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 1
+      id: architecto
       contentItem: 1
     queryParameters: []
     cleanQueryParameters: []
@@ -409,7 +409,7 @@ endpoints:
       groupName: 'CMS - Management'
       groupDescription: |-
 
-        Manage content items (posts, pages, projects) within a CMS tenant.
+        Manage content items within a CMS tenant.
         All endpoints require authentication and the `X-Tenant-ID` header.
         Content is isolated by tenant - you can only manage content in tenants you own or are a member of.
       subgroup: ''
@@ -431,8 +431,8 @@ endpoints:
         name: id
         description: 'The ID of the content.'
         required: true
-        example: 1
-        type: integer
+        example: architecto
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -449,7 +449,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 1
+      id: architecto
       contentItem: 1
     queryParameters: []
     cleanQueryParameters: []
@@ -601,7 +601,7 @@ endpoints:
       groupName: 'CMS - Management'
       groupDescription: |-
 
-        Manage content items (posts, pages, projects) within a CMS tenant.
+        Manage content items within a CMS tenant.
         All endpoints require authentication and the `X-Tenant-ID` header.
         Content is isolated by tenant - you can only manage content in tenants you own or are a member of.
       subgroup: ''
@@ -623,8 +623,8 @@ endpoints:
         name: id
         description: 'The ID of the content.'
         required: true
-        example: 1
-        type: integer
+        example: architecto
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -641,7 +641,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 1
+      id: architecto
       contentItem: 1
     queryParameters: []
     cleanQueryParameters: []
@@ -789,7 +789,7 @@ endpoints:
         name: comment_id
         description: 'The ID of the comment.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -807,7 +807,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      comment_id: 16
+      comment_id: 1
       comment: 1
     queryParameters: []
     cleanQueryParameters: []
@@ -866,7 +866,7 @@ endpoints:
         name: comment_id
         description: 'The ID of the comment.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -884,7 +884,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      comment_id: 16
+      comment_id: 1
       comment: 1
     queryParameters: []
     cleanQueryParameters: []
@@ -943,7 +943,7 @@ endpoints:
         name: comment_id
         description: 'The ID of the comment.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -961,7 +961,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      comment_id: 16
+      comment_id: 1
       comment: 1
     queryParameters: []
     cleanQueryParameters: []
@@ -1161,7 +1161,7 @@ endpoints:
         name: id
         description: 'The ID of the tag.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -1179,7 +1179,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 16
+      id: 1
       tag: 1
     queryParameters: []
     cleanQueryParameters: []
@@ -1250,7 +1250,7 @@ endpoints:
         name: id
         description: 'The ID of the tag.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -1268,7 +1268,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 16
+      id: 1
       tag: 1
     queryParameters: []
     cleanQueryParameters: []
@@ -1353,7 +1353,7 @@ endpoints:
         name: id
         description: 'The ID of the tag.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -1371,7 +1371,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 16
+      id: 1
       tag: 1
     queryParameters: []
     cleanQueryParameters: []

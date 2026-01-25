@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Config;
 
 class SetupDatabases extends Command
 {
@@ -26,29 +27,30 @@ class SetupDatabases extends Command
      */
     public function handle()
     {
-        $databases = [
-            ['name' => env('PLATFORM_DB_DATABASE', 'platform'), 'description' => 'Platform management database'],
-            ['name' => env('CMS_DB_DATABASE', 'cms'), 'description' => 'CMS service database'],
-        ];
+        $this->info('Starting database creation process...');
 
-        $this->info('Creating platform databases...');
+        $connections = Config::get('database.connections');
 
-        foreach ($databases as $db) {
+        foreach ($connections as $key => $config) {
+            $dbName = $config['database'];
+            $charset = $config['charset'] ?? 'utf8mb4';
+            $collation = $config['collation'] ?? 'utf8mb4_unicode_ci';
+
+            if (!$dbName) {
+                $this->warn("Skipping connection [{$key}]: No database name defined.");
+                continue;
+            }
+
             try {
-                DB::statement("CREATE DATABASE IF NOT EXISTS `{$db['name']}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-                $this->info("✓ {$db['description']}: {$db['name']}");
+                DB::statement("CREATE DATABASE IF NOT EXISTS `{$dbName}` CHARACTER SET {$charset} COLLATE {$collation}");
+                $this->info("✓ Created or verified existence of database: {$dbName}");
             } catch (\Exception $e) {
-                $this->error("✗ Failed to create {$db['name']}: " . $e->getMessage());
+                $this->error("✗ Failed to create {$dbName}: " . $e->getMessage());
             }
         }
 
         $this->newLine();
         $this->info('Database setup complete!');
-        $this->info('Next steps:');
-        $this->line('  1. Run: php artisan migrate:fresh');
-        $this->line('  2. Run: php artisan migrate --database=platform_db --path=database/migrations/platform');
-        $this->line('  3. Run: php artisan db:seed');
-
         return 0;
     }
 }

@@ -17,6 +17,14 @@ class Comment extends Model
     protected $connection = 'cms_db';
 
     /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory()
+    {
+        return \Database\Factories\Cms\CommentFactory::new();
+    }
+
+    /**
      * The attributes that are mass assignable.
      */
     protected $fillable = [

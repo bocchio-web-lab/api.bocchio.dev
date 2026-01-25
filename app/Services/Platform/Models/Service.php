@@ -18,6 +18,14 @@ class Service extends Model
     protected $connection = 'platform_db';
 
     /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory()
+    {
+        return \Database\Factories\Platform\ServiceFactory::new();
+    }
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>

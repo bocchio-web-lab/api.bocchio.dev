@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('tenant_id'); // FK to platform_db.tenants
             $table->unsignedBigInteger('author_id'); // FK to identity_db.users
-            $table->enum('type', ['post', 'page', 'project'])->default('post');
+            $table->string('type');
             $table->string('title');
             $table->string('slug');
             $table->text('excerpt')->nullable();
@@ -31,7 +31,6 @@ return new class extends Migration {
             $table->index('author_id');
             $table->index(['tenant_id', 'slug']);
             $table->index(['tenant_id', 'status']);
-            $table->index(['tenant_id', 'type']);
             $table->index('published_at');
 
             // Unique slug per tenant

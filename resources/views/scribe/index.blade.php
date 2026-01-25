@@ -179,20 +179,11 @@
                                                     <li class="tocify-item level-2" data-unique="cms-content-delivery-GETapi-content-cms--tenant_slug-">
                                 <a href="#cms-content-delivery-GETapi-content-cms--tenant_slug-">Get tenant info</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="cms-content-delivery-GETapi-content-cms--tenant_slug--posts">
-                                <a href="#cms-content-delivery-GETapi-content-cms--tenant_slug--posts">List published posts</a>
+                                                                                <li class="tocify-item level-2" data-unique="cms-content-delivery-GETapi-content-cms--tenant_slug---type-">
+                                <a href="#cms-content-delivery-GETapi-content-cms--tenant_slug---type-">List published content items of a specific type</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="cms-content-delivery-GETapi-content-cms--tenant_slug--posts--post_slug-">
-                                <a href="#cms-content-delivery-GETapi-content-cms--tenant_slug--posts--post_slug-">Get a published post</a>
-                            </li>
-                                                                                <li class="tocify-item level-2" data-unique="cms-content-delivery-GETapi-content-cms--tenant_slug--pages">
-                                <a href="#cms-content-delivery-GETapi-content-cms--tenant_slug--pages">List published pages</a>
-                            </li>
-                                                                                <li class="tocify-item level-2" data-unique="cms-content-delivery-GETapi-content-cms--tenant_slug--pages--page_slug-">
-                                <a href="#cms-content-delivery-GETapi-content-cms--tenant_slug--pages--page_slug-">Get a published page</a>
-                            </li>
-                                                                                <li class="tocify-item level-2" data-unique="cms-content-delivery-GETapi-content-cms--tenant_slug--projects">
-                                <a href="#cms-content-delivery-GETapi-content-cms--tenant_slug--projects">List published projects</a>
+                                                                                <li class="tocify-item level-2" data-unique="cms-content-delivery-GETapi-content-cms--tenant_slug---type---item_slug-">
+                                <a href="#cms-content-delivery-GETapi-content-cms--tenant_slug---type---item_slug-">Get a specific published content item</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="cms-content-delivery-GETapi-content-cms--tenant_slug--tags">
                                 <a href="#cms-content-delivery-GETapi-content-cms--tenant_slug--tags">List tags with published content</a>
@@ -211,7 +202,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: January 21, 2026</li>
+        <li>Last updated: January 25, 2026</li>
     </ul>
 </div>
 
@@ -1444,7 +1435,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
                 <h1 id="cms-management">CMS - Management</h1>
 
-    <p>Manage content items (posts, pages, projects) within a CMS tenant.
+    <p>Manage content items within a CMS tenant.
 All endpoints require authentication and the <code>X-Tenant-ID</code> header.
 Content is isolated by tenant - you can only manage content in tenants you own or are a member of.</p>
 
@@ -1455,7 +1446,7 @@ Content is isolated by tenant - you can only manage content in tenants you own o
 </p>
 
 <p>Returns a paginated list of content items in the current tenant.
-You can filter by type (post, page, project) and status (draft, published, archived).</p>
+You can filter by type (custom string) and status (draft, published, archived).</p>
 
 <span id="example-requests-GETapi-manage-cms-content">
 <blockquote>Example request:</blockquote>
@@ -1666,7 +1657,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <small class="badge badge-darkred">requires authentication</small>
 </p>
 
-<p>Creates a new content item (post, page, or project). The authenticated user
+<p>Creates a new content item. The authenticated user
 becomes the author. You can optionally attach tags and set the status.
 If no slug is provided, one will be auto-generated from the title.</p>
 
@@ -1882,14 +1873,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
         <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>type</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
- &nbsp;
+<i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
                               name="type"                data-endpoint="POSTapi-manage-cms-content"
                value="post"
                data-component="body">
     <br>
-<p>Type of content: post, page, or project. Example: <code>post</code></p>
+<p>Custom content type. Example: <code>post</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>title</code></b>&nbsp;&nbsp;
@@ -2006,7 +1997,7 @@ author details, tags, and comments.</p>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/manage/cms/content/1" \
+    --get "http://localhost:8000/api/manage/cms/content/architecto" \
     --header "Authorization: {YOUR_AUTH_TOKEN}" \
     --header "X-Tenant-ID: required The ID of the tenant context. Example: 1" \
     --header "Content-Type: application/json" \
@@ -2015,7 +2006,7 @@ author details, tags, and comments.</p>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/manage/cms/content/1"
+    "http://localhost:8000/api/manage/cms/content/architecto"
 );
 
 const headers = {
@@ -2162,15 +2153,15 @@ You can check the Dev Tools console for debugging information.</code></pre>
                         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
+<small>string</small>&nbsp;
  &nbsp;
  &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="id"                data-endpoint="GETapi-manage-cms-content--id-"
-               value="1"
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="GETapi-manage-cms-content--id-"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the content. Example: <code>1</code></p>
+<p>The ID of the content. Example: <code>architecto</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>contentItem</code></b>&nbsp;&nbsp;
@@ -2201,7 +2192,7 @@ You can update any field including title, body, status, and tags.</p>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "http://localhost:8000/api/manage/cms/content/1" \
+    "http://localhost:8000/api/manage/cms/content/architecto" \
     --header "Authorization: {YOUR_AUTH_TOKEN}" \
     --header "X-Tenant-ID: required The ID of the tenant context. Example: 1" \
     --header "Content-Type: application/json" \
@@ -2226,7 +2217,7 @@ You can update any field including title, body, status, and tags.</p>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/manage/cms/content/1"
+    "http://localhost:8000/api/manage/cms/content/architecto"
 );
 
 const headers = {
@@ -2388,15 +2379,15 @@ You can check the Dev Tools console for debugging information.</code></pre>
                         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
+<small>string</small>&nbsp;
  &nbsp;
  &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="id"                data-endpoint="PUTapi-manage-cms-content--id-"
-               value="1"
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="PUTapi-manage-cms-content--id-"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the content. Example: <code>1</code></p>
+<p>The ID of the content. Example: <code>architecto</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>contentItem</code></b>&nbsp;&nbsp;
@@ -2526,7 +2517,7 @@ This action cannot be undone.</p>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "http://localhost:8000/api/manage/cms/content/1" \
+    "http://localhost:8000/api/manage/cms/content/architecto" \
     --header "Authorization: {YOUR_AUTH_TOKEN}" \
     --header "X-Tenant-ID: required The ID of the tenant context. Example: 1" \
     --header "Content-Type: application/json" \
@@ -2535,7 +2526,7 @@ This action cannot be undone.</p>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/manage/cms/content/1"
+    "http://localhost:8000/api/manage/cms/content/architecto"
 );
 
 const headers = {
@@ -2670,15 +2661,15 @@ You can check the Dev Tools console for debugging information.</code></pre>
                         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
+<small>string</small>&nbsp;
  &nbsp;
  &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="id"                data-endpoint="DELETEapi-manage-cms-content--id-"
-               value="1"
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="DELETEapi-manage-cms-content--id-"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the content. Example: <code>1</code></p>
+<p>The ID of the content. Example: <code>architecto</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>contentItem</code></b>&nbsp;&nbsp;
@@ -2909,7 +2900,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/manage/cms/comments/16/approve" \
+    "http://localhost:8000/api/manage/cms/comments/1/approve" \
     --header "Authorization: {YOUR_AUTH_TOKEN}" \
     --header "X-Tenant-ID: required The ID of the tenant context. Example: 1" \
     --header "Content-Type: application/json" \
@@ -2918,7 +2909,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/manage/cms/comments/16/approve"
+    "http://localhost:8000/api/manage/cms/comments/1/approve"
 );
 
 const headers = {
@@ -3054,10 +3045,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="comment_id"                data-endpoint="POSTapi-manage-cms-comments--comment_id--approve"
-               value="16"
+               value="1"
                data-component="url">
     <br>
-<p>The ID of the comment. Example: <code>16</code></p>
+<p>The ID of the comment. Example: <code>1</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>comment</code></b>&nbsp;&nbsp;
@@ -3087,7 +3078,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/manage/cms/comments/16/reject" \
+    "http://localhost:8000/api/manage/cms/comments/1/reject" \
     --header "Authorization: {YOUR_AUTH_TOKEN}" \
     --header "X-Tenant-ID: required The ID of the tenant context. Example: 1" \
     --header "Content-Type: application/json" \
@@ -3096,7 +3087,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/manage/cms/comments/16/reject"
+    "http://localhost:8000/api/manage/cms/comments/1/reject"
 );
 
 const headers = {
@@ -3232,10 +3223,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="comment_id"                data-endpoint="POSTapi-manage-cms-comments--comment_id--reject"
-               value="16"
+               value="1"
                data-component="url">
     <br>
-<p>The ID of the comment. Example: <code>16</code></p>
+<p>The ID of the comment. Example: <code>1</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>comment</code></b>&nbsp;&nbsp;
@@ -3265,7 +3256,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "http://localhost:8000/api/manage/cms/comments/16" \
+    "http://localhost:8000/api/manage/cms/comments/1" \
     --header "Authorization: {YOUR_AUTH_TOKEN}" \
     --header "X-Tenant-ID: required The ID of the tenant context. Example: 1" \
     --header "Content-Type: application/json" \
@@ -3274,7 +3265,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/manage/cms/comments/16"
+    "http://localhost:8000/api/manage/cms/comments/1"
 );
 
 const headers = {
@@ -3405,10 +3396,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="comment_id"                data-endpoint="DELETEapi-manage-cms-comments--comment_id-"
-               value="16"
+               value="1"
                data-component="url">
     <br>
-<p>The ID of the comment. Example: <code>16</code></p>
+<p>The ID of the comment. Example: <code>1</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>comment</code></b>&nbsp;&nbsp;
@@ -3796,7 +3787,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/manage/cms/tags/16" \
+    --get "http://localhost:8000/api/manage/cms/tags/1" \
     --header "Authorization: {YOUR_AUTH_TOKEN}" \
     --header "X-Tenant-ID: required The ID of the tenant context. Example: 1" \
     --header "Content-Type: application/json" \
@@ -3805,7 +3796,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/manage/cms/tags/16"
+    "http://localhost:8000/api/manage/cms/tags/1"
 );
 
 const headers = {
@@ -3952,10 +3943,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="id"                data-endpoint="GETapi-manage-cms-tags--id-"
-               value="16"
+               value="1"
                data-component="url">
     <br>
-<p>The ID of the tag. Example: <code>16</code></p>
+<p>The ID of the tag. Example: <code>1</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>tag</code></b>&nbsp;&nbsp;
@@ -3985,7 +3976,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "http://localhost:8000/api/manage/cms/tags/16" \
+    "http://localhost:8000/api/manage/cms/tags/1" \
     --header "Authorization: {YOUR_AUTH_TOKEN}" \
     --header "X-Tenant-ID: required The ID of the tenant context. Example: 1" \
     --header "Content-Type: application/json" \
@@ -3999,7 +3990,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/manage/cms/tags/16"
+    "http://localhost:8000/api/manage/cms/tags/1"
 );
 
 const headers = {
@@ -4145,10 +4136,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="id"                data-endpoint="PUTapi-manage-cms-tags--id-"
-               value="16"
+               value="1"
                data-component="url">
     <br>
-<p>The ID of the tag. Example: <code>16</code></p>
+<p>The ID of the tag. Example: <code>1</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>tag</code></b>&nbsp;&nbsp;
@@ -4204,7 +4195,7 @@ but will no longer be tagged with it.</p>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "http://localhost:8000/api/manage/cms/tags/16" \
+    "http://localhost:8000/api/manage/cms/tags/1" \
     --header "Authorization: {YOUR_AUTH_TOKEN}" \
     --header "X-Tenant-ID: required The ID of the tenant context. Example: 1" \
     --header "Content-Type: application/json" \
@@ -4213,7 +4204,7 @@ but will no longer be tagged with it.</p>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/manage/cms/tags/16"
+    "http://localhost:8000/api/manage/cms/tags/1"
 );
 
 const headers = {
@@ -4344,10 +4335,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="id"                data-endpoint="DELETEapi-manage-cms-tags--id-"
-               value="16"
+               value="1"
                data-component="url">
     <br>
-<p>The ID of the tag. Example: <code>16</code></p>
+<p>The ID of the tag. Example: <code>1</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>tag</code></b>&nbsp;&nbsp;
@@ -4534,21 +4525,24 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                     </form>
 
-                    <h2 id="cms-content-delivery-GETapi-content-cms--tenant_slug--posts">List published posts</h2>
+                    <h2 id="cms-content-delivery-GETapi-content-cms--tenant_slug---type-">List published content items of a specific type</h2>
 
 <p>
 </p>
 
-<p>Returns a paginated list of published blog posts, ordered by publish date (newest first).
-Only published content is returned; drafts and archived posts are excluded.</p>
+<p>Returns a paginated list of published content items for any type (posts, pages, projects, etc.),
+ordered by publish date (newest first). Only published content is returned.</p>
+<p>The type parameter accepts plural forms (posts, pages, projects) and automatically
+converts to singular for database queries. This allows you to add new content types
+without modifying code.</p>
 
-<span id="example-requests-GETapi-content-cms--tenant_slug--posts">
+<span id="example-requests-GETapi-content-cms--tenant_slug---type-">
 <blockquote>Example request:</blockquote>
 
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/content/cms/my-blog-abc123/posts" \
+    --get "http://localhost:8000/api/content/cms/my-blog-abc123/posts?per_page=10" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
@@ -4557,6 +4551,12 @@ Only published content is returned; drafts and archived posts are excluded.</p>
     <pre><code class="language-javascript">const url = new URL(
     "http://localhost:8000/api/content/cms/my-blog-abc123/posts"
 );
+
+const params = {
+    "per_page": "10",
+};
+Object.keys(params)
+    .forEach(key =&gt; url.searchParams.append(key, params[key]));
 
 const headers = {
     "Content-Type": "application/json",
@@ -4570,7 +4570,7 @@ fetch(url, {
 
 </span>
 
-<span id="example-responses-GETapi-content-cms--tenant_slug--posts">
+<span id="example-responses-GETapi-content-cms--tenant_slug---type-">
             <blockquote>
             <p>Example response (200):</p>
         </blockquote>
@@ -4581,11 +4581,11 @@ fetch(url, {
     &quot;data&quot;: [
         {
             &quot;id&quot;: 1,
-            &quot;type&quot;: &quot;post&quot;,
             &quot;title&quot;: &quot;Getting Started with Laravel&quot;,
             &quot;slug&quot;: &quot;getting-started-with-laravel&quot;,
             &quot;excerpt&quot;: &quot;Learn the basics of Laravel&quot;,
             &quot;body&quot;: &quot;# Getting Started...&quot;,
+            &quot;type&quot;: &quot;post&quot;,
             &quot;status&quot;: &quot;published&quot;,
             &quot;published_at&quot;: &quot;2025-01-22T10:00:00.000000Z&quot;,
             &quot;created_at&quot;: &quot;2025-01-22T09:00:00.000000Z&quot;,
@@ -4604,43 +4604,43 @@ fetch(url, {
 }</code>
  </pre>
     </span>
-<span id="execution-results-GETapi-content-cms--tenant_slug--posts" hidden>
+<span id="execution-results-GETapi-content-cms--tenant_slug---type-" hidden>
     <blockquote>Received response<span
-                id="execution-response-status-GETapi-content-cms--tenant_slug--posts"></span>:
+                id="execution-response-status-GETapi-content-cms--tenant_slug---type-"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-content-cms--tenant_slug--posts"
+    <pre class="json"><code id="execution-response-content-GETapi-content-cms--tenant_slug---type-"
       data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
 </span>
-<span id="execution-error-GETapi-content-cms--tenant_slug--posts" hidden>
+<span id="execution-error-GETapi-content-cms--tenant_slug---type-" hidden>
     <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-content-cms--tenant_slug--posts">
+    <pre><code id="execution-error-message-GETapi-content-cms--tenant_slug---type-">
 
 Tip: Check that you&#039;re properly connected to the network.
 If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
 You can check the Dev Tools console for debugging information.</code></pre>
 </span>
-<form id="form-GETapi-content-cms--tenant_slug--posts" data-method="GET"
-      data-path="api/content/cms/{tenant_slug}/posts"
+<form id="form-GETapi-content-cms--tenant_slug---type-" data-method="GET"
+      data-path="api/content/cms/{tenant_slug}/{type}"
       data-authed="0"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-content-cms--tenant_slug--posts', this);">
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-content-cms--tenant_slug---type-', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
                     <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-content-cms--tenant_slug--posts"
-                    onclick="tryItOut('GETapi-content-cms--tenant_slug--posts');">Try it out ⚡
+                    id="btn-tryout-GETapi-content-cms--tenant_slug---type-"
+                    onclick="tryItOut('GETapi-content-cms--tenant_slug---type-');">Try it out ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-content-cms--tenant_slug--posts"
-                    onclick="cancelTryOut('GETapi-content-cms--tenant_slug--posts');" hidden>Cancel 🛑
+                    id="btn-canceltryout-GETapi-content-cms--tenant_slug---type-"
+                    onclick="cancelTryOut('GETapi-content-cms--tenant_slug---type-');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-content-cms--tenant_slug--posts"
+                    id="btn-executetryout-GETapi-content-cms--tenant_slug---type-"
                     data-initial-text="Send Request 💥"
                     data-loading-text="⏱ Sending..."
                     hidden>Send Request 💥
@@ -4648,7 +4648,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </h3>
             <p>
             <small class="badge badge-green">GET</small>
-            <b><code>api/content/cms/{tenant_slug}/posts</code></b>
+            <b><code>api/content/cms/{tenant_slug}/{type}</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
@@ -4657,7 +4657,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-content-cms--tenant_slug--posts"
+                              name="Content-Type"                data-endpoint="GETapi-content-cms--tenant_slug---type-"
                value="application/json"
                data-component="header">
     <br>
@@ -4669,7 +4669,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-content-cms--tenant_slug--posts"
+                              name="Accept"                data-endpoint="GETapi-content-cms--tenant_slug---type-"
                value="application/json"
                data-component="header">
     <br>
@@ -4682,23 +4682,48 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="tenant_slug"                data-endpoint="GETapi-content-cms--tenant_slug--posts"
+                              name="tenant_slug"                data-endpoint="GETapi-content-cms--tenant_slug---type-"
                value="my-blog-abc123"
                data-component="url">
     <br>
 <p>The public slug of the tenant. Example: <code>my-blog-abc123</code></p>
             </div>
-                    </form>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="type"                data-endpoint="GETapi-content-cms--tenant_slug---type-"
+               value="posts"
+               data-component="url">
+    <br>
+<p>The type of content (plural). Example: <code>posts</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>per_page</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="per_page"                data-endpoint="GETapi-content-cms--tenant_slug---type-"
+               value="10"
+               data-component="query">
+    <br>
+<p>The number of items per page. Defaults to 15. Example: <code>10</code></p>
+            </div>
+                </form>
 
-                    <h2 id="cms-content-delivery-GETapi-content-cms--tenant_slug--posts--post_slug-">Get a published post</h2>
+                    <h2 id="cms-content-delivery-GETapi-content-cms--tenant_slug---type---item_slug-">Get a specific published content item</h2>
 
 <p>
 </p>
 
-<p>Returns a single published post by its slug, including tags and approved comments.
-Comments are ordered by creation date (newest first).</p>
+<p>Returns a single published content item by its type and slug, including tags
+and approved comments (if applicable). Comments are ordered by creation date (newest first).</p>
 
-<span id="example-requests-GETapi-content-cms--tenant_slug--posts--post_slug-">
+<span id="example-requests-GETapi-content-cms--tenant_slug---type---item_slug-">
 <blockquote>Example request:</blockquote>
 
 
@@ -4726,7 +4751,7 @@ fetch(url, {
 
 </span>
 
-<span id="example-responses-GETapi-content-cms--tenant_slug--posts--post_slug-">
+<span id="example-responses-GETapi-content-cms--tenant_slug---type---item_slug-">
             <blockquote>
             <p>Example response (200):</p>
         </blockquote>
@@ -4735,11 +4760,11 @@ fetch(url, {
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: {
         &quot;id&quot;: 1,
-        &quot;type&quot;: &quot;post&quot;,
         &quot;title&quot;: &quot;Getting Started with Laravel&quot;,
         &quot;slug&quot;: &quot;getting-started-with-laravel&quot;,
         &quot;excerpt&quot;: &quot;Learn the basics of Laravel&quot;,
         &quot;body&quot;: &quot;# Getting Started\n\nLaravel is...&quot;,
+        &quot;type&quot;: &quot;post&quot;,
         &quot;status&quot;: &quot;published&quot;,
         &quot;published_at&quot;: &quot;2025-01-22T10:00:00.000000Z&quot;,
         &quot;meta&quot;: {},
@@ -4773,43 +4798,43 @@ fetch(url, {
 }</code>
  </pre>
     </span>
-<span id="execution-results-GETapi-content-cms--tenant_slug--posts--post_slug-" hidden>
+<span id="execution-results-GETapi-content-cms--tenant_slug---type---item_slug-" hidden>
     <blockquote>Received response<span
-                id="execution-response-status-GETapi-content-cms--tenant_slug--posts--post_slug-"></span>:
+                id="execution-response-status-GETapi-content-cms--tenant_slug---type---item_slug-"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-content-cms--tenant_slug--posts--post_slug-"
+    <pre class="json"><code id="execution-response-content-GETapi-content-cms--tenant_slug---type---item_slug-"
       data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
 </span>
-<span id="execution-error-GETapi-content-cms--tenant_slug--posts--post_slug-" hidden>
+<span id="execution-error-GETapi-content-cms--tenant_slug---type---item_slug-" hidden>
     <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-content-cms--tenant_slug--posts--post_slug-">
+    <pre><code id="execution-error-message-GETapi-content-cms--tenant_slug---type---item_slug-">
 
 Tip: Check that you&#039;re properly connected to the network.
 If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
 You can check the Dev Tools console for debugging information.</code></pre>
 </span>
-<form id="form-GETapi-content-cms--tenant_slug--posts--post_slug-" data-method="GET"
-      data-path="api/content/cms/{tenant_slug}/posts/{post_slug}"
+<form id="form-GETapi-content-cms--tenant_slug---type---item_slug-" data-method="GET"
+      data-path="api/content/cms/{tenant_slug}/{type}/{item_slug}"
       data-authed="0"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-content-cms--tenant_slug--posts--post_slug-', this);">
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-content-cms--tenant_slug---type---item_slug-', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
                     <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-content-cms--tenant_slug--posts--post_slug-"
-                    onclick="tryItOut('GETapi-content-cms--tenant_slug--posts--post_slug-');">Try it out ⚡
+                    id="btn-tryout-GETapi-content-cms--tenant_slug---type---item_slug-"
+                    onclick="tryItOut('GETapi-content-cms--tenant_slug---type---item_slug-');">Try it out ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-content-cms--tenant_slug--posts--post_slug-"
-                    onclick="cancelTryOut('GETapi-content-cms--tenant_slug--posts--post_slug-');" hidden>Cancel 🛑
+                    id="btn-canceltryout-GETapi-content-cms--tenant_slug---type---item_slug-"
+                    onclick="cancelTryOut('GETapi-content-cms--tenant_slug---type---item_slug-');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-content-cms--tenant_slug--posts--post_slug-"
+                    id="btn-executetryout-GETapi-content-cms--tenant_slug---type---item_slug-"
                     data-initial-text="Send Request 💥"
                     data-loading-text="⏱ Sending..."
                     hidden>Send Request 💥
@@ -4817,7 +4842,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </h3>
             <p>
             <small class="badge badge-green">GET</small>
-            <b><code>api/content/cms/{tenant_slug}/posts/{post_slug}</code></b>
+            <b><code>api/content/cms/{tenant_slug}/{type}/{item_slug}</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
@@ -4826,7 +4851,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-content-cms--tenant_slug--posts--post_slug-"
+                              name="Content-Type"                data-endpoint="GETapi-content-cms--tenant_slug---type---item_slug-"
                value="application/json"
                data-component="header">
     <br>
@@ -4838,7 +4863,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-content-cms--tenant_slug--posts--post_slug-"
+                              name="Accept"                data-endpoint="GETapi-content-cms--tenant_slug---type---item_slug-"
                value="application/json"
                data-component="header">
     <br>
@@ -4851,495 +4876,35 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="tenant_slug"                data-endpoint="GETapi-content-cms--tenant_slug--posts--post_slug-"
+                              name="tenant_slug"                data-endpoint="GETapi-content-cms--tenant_slug---type---item_slug-"
                value="my-blog-abc123"
                data-component="url">
     <br>
 <p>The public slug of the tenant. Example: <code>my-blog-abc123</code></p>
             </div>
                     <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>post_slug</code></b>&nbsp;&nbsp;
+                <b style="line-height: 2;"><code>type</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="post_slug"                data-endpoint="GETapi-content-cms--tenant_slug--posts--post_slug-"
+                              name="type"                data-endpoint="GETapi-content-cms--tenant_slug---type---item_slug-"
+               value="posts"
+               data-component="url">
+    <br>
+<p>The type of content (plural). Example: <code>posts</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>item_slug</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="item_slug"                data-endpoint="GETapi-content-cms--tenant_slug---type---item_slug-"
                value="getting-started-with-laravel"
                data-component="url">
     <br>
-<p>The slug of the post. Example: <code>getting-started-with-laravel</code></p>
-            </div>
-                    </form>
-
-                    <h2 id="cms-content-delivery-GETapi-content-cms--tenant_slug--pages">List published pages</h2>
-
-<p>
-</p>
-
-<p>Returns all published pages, ordered alphabetically by title.
-Pages are typically static content like &quot;About&quot; or &quot;Contact&quot;.</p>
-
-<span id="example-requests-GETapi-content-cms--tenant_slug--pages">
-<blockquote>Example request:</blockquote>
-
-
-<div class="bash-example">
-    <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/content/cms/my-blog-abc123/pages" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
-
-
-<div class="javascript-example">
-    <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/content/cms/my-blog-abc123/pages"
-);
-
-const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-fetch(url, {
-    method: "GET",
-    headers,
-}).then(response =&gt; response.json());</code></pre></div>
-
-</span>
-
-<span id="example-responses-GETapi-content-cms--tenant_slug--pages">
-            <blockquote>
-            <p>Example response (200):</p>
-        </blockquote>
-                <pre>
-
-<code class="language-json" style="max-height: 300px;">{
-    &quot;data&quot;: [
-        {
-            &quot;id&quot;: 2,
-            &quot;type&quot;: &quot;page&quot;,
-            &quot;title&quot;: &quot;About&quot;,
-            &quot;slug&quot;: &quot;about&quot;,
-            &quot;body&quot;: &quot;About us...&quot;,
-            &quot;status&quot;: &quot;published&quot;,
-            &quot;published_at&quot;: &quot;2025-01-20T10:00:00.000000Z&quot;
-        },
-        {
-            &quot;id&quot;: 3,
-            &quot;type&quot;: &quot;page&quot;,
-            &quot;title&quot;: &quot;Contact&quot;,
-            &quot;slug&quot;: &quot;contact&quot;,
-            &quot;body&quot;: &quot;Contact information...&quot;,
-            &quot;status&quot;: &quot;published&quot;,
-            &quot;published_at&quot;: &quot;2025-01-20T10:00:00.000000Z&quot;
-        }
-    ]
-}</code>
- </pre>
-    </span>
-<span id="execution-results-GETapi-content-cms--tenant_slug--pages" hidden>
-    <blockquote>Received response<span
-                id="execution-response-status-GETapi-content-cms--tenant_slug--pages"></span>:
-    </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-content-cms--tenant_slug--pages"
-      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
-</span>
-<span id="execution-error-GETapi-content-cms--tenant_slug--pages" hidden>
-    <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-content-cms--tenant_slug--pages">
-
-Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</code></pre>
-</span>
-<form id="form-GETapi-content-cms--tenant_slug--pages" data-method="GET"
-      data-path="api/content/cms/{tenant_slug}/pages"
-      data-authed="0"
-      data-hasfiles="0"
-      data-isarraybody="0"
-      autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-content-cms--tenant_slug--pages', this);">
-    <h3>
-        Request&nbsp;&nbsp;&nbsp;
-                    <button type="button"
-                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-content-cms--tenant_slug--pages"
-                    onclick="tryItOut('GETapi-content-cms--tenant_slug--pages');">Try it out ⚡
-            </button>
-            <button type="button"
-                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-content-cms--tenant_slug--pages"
-                    onclick="cancelTryOut('GETapi-content-cms--tenant_slug--pages');" hidden>Cancel 🛑
-            </button>&nbsp;&nbsp;
-            <button type="submit"
-                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-content-cms--tenant_slug--pages"
-                    data-initial-text="Send Request 💥"
-                    data-loading-text="⏱ Sending..."
-                    hidden>Send Request 💥
-            </button>
-            </h3>
-            <p>
-            <small class="badge badge-green">GET</small>
-            <b><code>api/content/cms/{tenant_slug}/pages</code></b>
-        </p>
-                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-content-cms--tenant_slug--pages"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-content-cms--tenant_slug--pages"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
-                    <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>tenant_slug</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="tenant_slug"                data-endpoint="GETapi-content-cms--tenant_slug--pages"
-               value="my-blog-abc123"
-               data-component="url">
-    <br>
-<p>The public slug of the tenant. Example: <code>my-blog-abc123</code></p>
-            </div>
-                    </form>
-
-                    <h2 id="cms-content-delivery-GETapi-content-cms--tenant_slug--pages--page_slug-">Get a published page</h2>
-
-<p>
-</p>
-
-<p>Returns a single published page by its slug.</p>
-
-<span id="example-requests-GETapi-content-cms--tenant_slug--pages--page_slug-">
-<blockquote>Example request:</blockquote>
-
-
-<div class="bash-example">
-    <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/content/cms/my-blog-abc123/pages/about" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
-
-
-<div class="javascript-example">
-    <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/content/cms/my-blog-abc123/pages/about"
-);
-
-const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-fetch(url, {
-    method: "GET",
-    headers,
-}).then(response =&gt; response.json());</code></pre></div>
-
-</span>
-
-<span id="example-responses-GETapi-content-cms--tenant_slug--pages--page_slug-">
-            <blockquote>
-            <p>Example response (200):</p>
-        </blockquote>
-                <pre>
-
-<code class="language-json" style="max-height: 300px;">{
-    &quot;data&quot;: {
-        &quot;id&quot;: 2,
-        &quot;type&quot;: &quot;page&quot;,
-        &quot;title&quot;: &quot;About&quot;,
-        &quot;slug&quot;: &quot;about&quot;,
-        &quot;body&quot;: &quot;About us content...&quot;,
-        &quot;status&quot;: &quot;published&quot;,
-        &quot;published_at&quot;: &quot;2025-01-20T10:00:00.000000Z&quot;,
-        &quot;meta&quot;: {},
-        &quot;created_at&quot;: &quot;2025-01-20T09:00:00.000000Z&quot;,
-        &quot;updated_at&quot;: &quot;2025-01-20T10:00:00.000000Z&quot;
-    }
-}</code>
- </pre>
-            <blockquote>
-            <p>Example response (404):</p>
-        </blockquote>
-                <pre>
-
-<code class="language-json" style="max-height: 300px;">{
-    &quot;message&quot;: &quot;No query results for model [ContentItem].&quot;
-}</code>
- </pre>
-    </span>
-<span id="execution-results-GETapi-content-cms--tenant_slug--pages--page_slug-" hidden>
-    <blockquote>Received response<span
-                id="execution-response-status-GETapi-content-cms--tenant_slug--pages--page_slug-"></span>:
-    </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-content-cms--tenant_slug--pages--page_slug-"
-      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
-</span>
-<span id="execution-error-GETapi-content-cms--tenant_slug--pages--page_slug-" hidden>
-    <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-content-cms--tenant_slug--pages--page_slug-">
-
-Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</code></pre>
-</span>
-<form id="form-GETapi-content-cms--tenant_slug--pages--page_slug-" data-method="GET"
-      data-path="api/content/cms/{tenant_slug}/pages/{page_slug}"
-      data-authed="0"
-      data-hasfiles="0"
-      data-isarraybody="0"
-      autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-content-cms--tenant_slug--pages--page_slug-', this);">
-    <h3>
-        Request&nbsp;&nbsp;&nbsp;
-                    <button type="button"
-                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-content-cms--tenant_slug--pages--page_slug-"
-                    onclick="tryItOut('GETapi-content-cms--tenant_slug--pages--page_slug-');">Try it out ⚡
-            </button>
-            <button type="button"
-                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-content-cms--tenant_slug--pages--page_slug-"
-                    onclick="cancelTryOut('GETapi-content-cms--tenant_slug--pages--page_slug-');" hidden>Cancel 🛑
-            </button>&nbsp;&nbsp;
-            <button type="submit"
-                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-content-cms--tenant_slug--pages--page_slug-"
-                    data-initial-text="Send Request 💥"
-                    data-loading-text="⏱ Sending..."
-                    hidden>Send Request 💥
-            </button>
-            </h3>
-            <p>
-            <small class="badge badge-green">GET</small>
-            <b><code>api/content/cms/{tenant_slug}/pages/{page_slug}</code></b>
-        </p>
-                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-content-cms--tenant_slug--pages--page_slug-"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-content-cms--tenant_slug--pages--page_slug-"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
-                    <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>tenant_slug</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="tenant_slug"                data-endpoint="GETapi-content-cms--tenant_slug--pages--page_slug-"
-               value="my-blog-abc123"
-               data-component="url">
-    <br>
-<p>The public slug of the tenant. Example: <code>my-blog-abc123</code></p>
-            </div>
-                    <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>page_slug</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="page_slug"                data-endpoint="GETapi-content-cms--tenant_slug--pages--page_slug-"
-               value="about"
-               data-component="url">
-    <br>
-<p>The slug of the page. Example: <code>about</code></p>
-            </div>
-                    </form>
-
-                    <h2 id="cms-content-delivery-GETapi-content-cms--tenant_slug--projects">List published projects</h2>
-
-<p>
-</p>
-
-<p>Returns all published projects with tags, ordered by publish date (newest first).
-Projects are portfolio items or case studies.</p>
-
-<span id="example-requests-GETapi-content-cms--tenant_slug--projects">
-<blockquote>Example request:</blockquote>
-
-
-<div class="bash-example">
-    <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/content/cms/my-blog-abc123/projects" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
-
-
-<div class="javascript-example">
-    <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/content/cms/my-blog-abc123/projects"
-);
-
-const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-fetch(url, {
-    method: "GET",
-    headers,
-}).then(response =&gt; response.json());</code></pre></div>
-
-</span>
-
-<span id="example-responses-GETapi-content-cms--tenant_slug--projects">
-            <blockquote>
-            <p>Example response (200):</p>
-        </blockquote>
-                <pre>
-
-<code class="language-json" style="max-height: 300px;">{
-    &quot;data&quot;: [
-        {
-            &quot;id&quot;: 4,
-            &quot;type&quot;: &quot;project&quot;,
-            &quot;title&quot;: &quot;E-Commerce Platform&quot;,
-            &quot;slug&quot;: &quot;ecommerce-platform&quot;,
-            &quot;excerpt&quot;: &quot;A full-featured online store&quot;,
-            &quot;body&quot;: &quot;Project details...&quot;,
-            &quot;status&quot;: &quot;published&quot;,
-            &quot;published_at&quot;: &quot;2025-01-21T10:00:00.000000Z&quot;,
-            &quot;tags&quot;: [
-                {
-                    &quot;id&quot;: 2,
-                    &quot;name&quot;: &quot;Laravel&quot;,
-                    &quot;slug&quot;: &quot;laravel&quot;
-                },
-                {
-                    &quot;id&quot;: 3,
-                    &quot;name&quot;: &quot;Vue.js&quot;,
-                    &quot;slug&quot;: &quot;vuejs&quot;
-                }
-            ]
-        }
-    ]
-}</code>
- </pre>
-    </span>
-<span id="execution-results-GETapi-content-cms--tenant_slug--projects" hidden>
-    <blockquote>Received response<span
-                id="execution-response-status-GETapi-content-cms--tenant_slug--projects"></span>:
-    </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-content-cms--tenant_slug--projects"
-      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
-</span>
-<span id="execution-error-GETapi-content-cms--tenant_slug--projects" hidden>
-    <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-content-cms--tenant_slug--projects">
-
-Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</code></pre>
-</span>
-<form id="form-GETapi-content-cms--tenant_slug--projects" data-method="GET"
-      data-path="api/content/cms/{tenant_slug}/projects"
-      data-authed="0"
-      data-hasfiles="0"
-      data-isarraybody="0"
-      autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-content-cms--tenant_slug--projects', this);">
-    <h3>
-        Request&nbsp;&nbsp;&nbsp;
-                    <button type="button"
-                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-content-cms--tenant_slug--projects"
-                    onclick="tryItOut('GETapi-content-cms--tenant_slug--projects');">Try it out ⚡
-            </button>
-            <button type="button"
-                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-content-cms--tenant_slug--projects"
-                    onclick="cancelTryOut('GETapi-content-cms--tenant_slug--projects');" hidden>Cancel 🛑
-            </button>&nbsp;&nbsp;
-            <button type="submit"
-                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-content-cms--tenant_slug--projects"
-                    data-initial-text="Send Request 💥"
-                    data-loading-text="⏱ Sending..."
-                    hidden>Send Request 💥
-            </button>
-            </h3>
-            <p>
-            <small class="badge badge-green">GET</small>
-            <b><code>api/content/cms/{tenant_slug}/projects</code></b>
-        </p>
-                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-content-cms--tenant_slug--projects"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-content-cms--tenant_slug--projects"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
-                    <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>tenant_slug</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="tenant_slug"                data-endpoint="GETapi-content-cms--tenant_slug--projects"
-               value="my-blog-abc123"
-               data-component="url">
-    <br>
-<p>The public slug of the tenant. Example: <code>my-blog-abc123</code></p>
+<p>The slug of the content item. Example: <code>getting-started-with-laravel</code></p>
             </div>
                     </form>
 
@@ -5548,7 +5113,6 @@ fetch(url, {
         &quot;data&quot;: [
             {
                 &quot;id&quot;: 1,
-                &quot;type&quot;: &quot;post&quot;,
                 &quot;title&quot;: &quot;Getting Started with Laravel&quot;,
                 &quot;slug&quot;: &quot;getting-started-with-laravel&quot;,
                 &quot;excerpt&quot;: &quot;Learn the basics&quot;,
