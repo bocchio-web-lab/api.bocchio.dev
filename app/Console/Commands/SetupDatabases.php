@@ -31,7 +31,12 @@ class SetupDatabases extends Command
 
         $connections = Config::get('database.connections');
 
+        $targetConnections = ['identity_db', 'platform_db', 'cms_db'];
+
         foreach ($connections as $key => $config) {
+            if (!\in_array($key, $targetConnections)) {
+                continue;
+            }
             $dbName = $config['database'];
             $charset = $config['charset'] ?? 'utf8mb4';
             $collation = $config['collation'] ?? 'utf8mb4_unicode_ci';
